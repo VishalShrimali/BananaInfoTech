@@ -1,30 +1,35 @@
-// src/pages/Courses.jsx
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CourseCard from "../components/CourseCard";
+import { motion } from "framer-motion";
 
 const Courses = ({ isDarkMode }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No authentication token found. Please log in.");
-        }
+      const token = localStorage.getItem("token");
 
+      if (!token) {
+        setError("You need to log in to view courses.");
+        setLoading(false);
+        return;
+      }
+
+      try {
         const response = await fetch("http://localhost:3000/api/v1/bananasit/users/courses", {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          throw new Error(`Error: ${response.status} - ${await response.text()}`);
         }
 
         const data = await response.json();
@@ -39,105 +44,91 @@ const Courses = ({ isDarkMode }) => {
     fetchCourses();
   }, []);
 
-  // Placeholder data for testing
-  const placeholderCourses = [
-    {
-      _id: "1",
-      title: "Web Development Fundamentals",
-      instructor: "Jane Smith",
-      price: 49.99,
-      imageUrl: "https://via.placeholder.com/300x200",
-    },
-    {
-      _id: "2",
-      title: "Advanced React",
-      instructor: "John Doe",
-      price: 79.99,
-      imageUrl: "https://via.placeholder.com/300x200",
-    },
-    {
-      _id: "3",
-      title: "Python for Data Science",
-      price: 59.99,
-      imageUrl: "https://via.placeholder.com/300x200",
-    },
-    {
-      _id: "4",
-      title: "UI/UX Design Basics",
-      instructor: "Emily Brown",
-      price: 39.99,
-      imageUrl: "https://via.placeholder.com/300x200",
-    },
-  ];
-
   if (loading) {
     return (
-      <div
-        className={`flex items-center justify-center min-h-screen ${
-          isDarkMode ? "bg-gray-950" : "bg-white"
-        }`}
-      >
-        <p
-          className={`text-lg ${
-            isDarkMode ? "text-gray-300" : "text-gray-600"
-          } animate-pulse`}
+      <div className={`flex flex-col items-center justify-center min-h-screen ${isDarkMode ? "bg-gray-950" : "bg-white"}`}>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, repeat: Infinity, repeatType: "reverse" }}
+          className={`text-lg ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
         >
           Loading courses...
-        </p>
+        </motion.p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        className={`flex items-center justify-center min-h-screen ${
-          isDarkMode ? "bg-gray-950" : "bg-white"
-        }`}
-      >
-        <p className="text-red-500 text-lg">Error: {error}</p>
+      <div className={`flex flex-col items-center justify-center min-h-screen ${isDarkMode ? "bg-gray-950" : "bg-white"}`}>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className={`text-xl mb-4 text-center max-w-3xl font-sans ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+        >
+          Oops! It looks like you need to log in to access our amazing courses. Sign in now to start learning!
+        </motion.p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white rounded-lg font-semibold text-lg transition-all duration-300 shadow-md font-sans`}
+          onClick={() => navigate("/login")}
+        >
+          Log In to Start Learning
+        </motion.button>
       </div>
     );
   }
-
-  const displayCourses = courses.length > 0 ? courses : placeholderCourses;
-
   return (
-    <section
-      className={`py-16 ${
-        isDarkMode ? "bg-gray-950" : "bg-white"
-      } transition-colors duration-300`}
-    >
+    <section className={`py-16 ${isDarkMode ? "bg-gray-950 text-gray-100" : "bg-white text-gray-900"} transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-6">
-        <h1
-          className={`text-4xl md:text-5xl font-bold text-center mb-12 ${
-            isDarkMode ? "text-gray-100" : "text-gray-800"
-          }`}
+        <motion.h1
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className={`text-4xl md:text-5xl font-bold text-center mb-12`}
         >
-          Explore Our{" "}
-          <span className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}>
-            Courses
-          </span>
-        </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {displayCourses.length > 0 ? (
-            displayCourses.slice(0, 4).map((course) => (
-              <CourseCard
-                key={course._id || course.id} // Handle both _id and id
-                course={course}
-                isDarkMode={isDarkMode}
-              />
-            ))
-          ) : (
-            <p
-              className={`text-center col-span-full ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              }`}
+          Explore Our <span className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}>Courses</span>
+        </motion.h1>
+
+        {courses.length > 0  ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+          >
+            {courses.slice(0, 4).map((course, index) => (
+              <motion.div
+                key={course._id || course.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <CourseCard course={course} isDarkMode={isDarkMode} />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mt-12"
+          >
+            <p className="text-xl text-gray-400">No courses available right now. Check back later! 😊</p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="mt-6 px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+              onClick={() => navigate("/")}
             >
-              No courses available
-            </p>
-          )}
-        </div>
+              Go Back Home
+            </motion.button>
+          </motion.div>
+        )}
       </div>
     </section>
   );

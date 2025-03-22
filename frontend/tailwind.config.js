@@ -24,5 +24,13 @@ export default {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        ".slick-dots li.slick-active div": {
+          backgroundColor: "#14B8A6", // teal-500
+        },
+      });
+    },
+  ],
 }

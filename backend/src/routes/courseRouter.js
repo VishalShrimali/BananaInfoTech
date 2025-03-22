@@ -10,7 +10,7 @@ const courseRoute = express.Router();
 
 courseRoute.post('/add', addCourse );
 
-courseRoute.get('/view/:id', courseAuth, viewCourse );
+courseRoute.get('/view/:id', userAuth, viewCourse );
 
 courseRoute.put('/update/:id', userAuth, updateCourse);
 

@@ -76,9 +76,9 @@ const Hero = ({ isDarkMode }) => {
       </section>
 
       {/* Footer Section */}
-      <section id="footer">
+      {/* <section id="footer">
         <Footer isDarkMode={isDarkMode} />
-      </section>
+      </section> */}
     </div>
   );
 };

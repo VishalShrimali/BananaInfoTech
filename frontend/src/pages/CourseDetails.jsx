@@ -1,50 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Added useNavigate
+import { motion } from "framer-motion"; // Added for animations
 
 const CourseDetail = ({ isDarkMode }) => {
-  const { courseId } = useParams(); // Get course ID from URL
+  const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // For navigation on error or back button
 
   // Fetch course details
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const token = localStorage.getItem("token");  // Debugging
-        console.log("Token in localStorage:", token);
-  
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Authentication required. Please log in.");
+        }
+
         const response = await fetch(
-          `http://localhost:3000/api/v1/bananasit/courses/view/${courseId}`, 
+          `http://localhost:3000/api/v1/bananasit/courses/view/${courseId}`,
           {
             method: "GET",
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
         );
-  
-        console.log("Response Status:", response.status); // Debugging
-  
+
         if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          throw new Error(`Error: ${response.status} - ${await response.text()}`);
         }
-  
+
         const data = await response.json();
         setCourse(data);
       } catch (error) {
-        console.error("Fetch Course Error:", error); // Debugging
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchCourse();
   }, [courseId]);
-  
-  // Placeholder course structure if API isn't set up yet
+
+  // Placeholder course structure
   const placeholderCourse = {
     id: courseId,
     title: "Sample Course",
@@ -59,7 +60,9 @@ const CourseDetail = ({ isDarkMode }) => {
 
   if (loading) {
     return (
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         className={`min-h-screen flex items-center justify-center ${
           isDarkMode ? "bg-gray-950" : "bg-white"
         }`}
@@ -71,60 +74,87 @@ const CourseDetail = ({ isDarkMode }) => {
         >
           Loading course details...
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   if (error) {
     return (
-      <div
-        className={`min-h-screen flex items-center justify-center ${
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className={`min-h-screen flex flex-col items-center justify-center ${
           isDarkMode ? "bg-gray-950" : "bg-white"
         }`}
       >
-        <p className="text-red-500 text-lg">Error: {error}</p>
-      </div>
+        <p className="text-red-500 text-lg mb-4">Error: {error}</p>
+        <button
+          onClick={() => navigate("/login")}
+          className={`px-6 py-3 ${
+            isDarkMode ? "bg-teal-600 hover:bg-teal-700" : "bg-teal-500 hover:bg-teal-600"
+          } text-white rounded-lg font-semibold transition-all duration-300`}
+        >
+          Go to Login
+        </button>
+      </motion.div>
     );
   }
 
   const courseData = course || placeholderCourse;
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
       className={`min-h-screen ${
         isDarkMode ? "bg-gray-950" : "bg-white"
       } transition-colors duration-300`}
     >
-      {/* Course Detail Section */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-6">
-          {/* Header */}
-          <div className="mb-12">
-            <h1
-              className={`text-4xl md:text-5xl font-bold ${
-                isDarkMode ? "text-gray-100" : "text-gray-800"
-              }`}
-            >
-              {courseData.title}
-            </h1>
-            <p
-              className={`mt-2 text-lg ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              Taught by{" "}
-              <span
-                className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mb-12 flex justify-between items-center"
+          >
+            <div>
+              <h1
+                className={`text-4xl md:text-5xl font-bold ${
+                  isDarkMode ? "text-gray-100" : "text-gray-800"
+                }`}
               >
-                {courseData.instructor}
-              </span>
-            </p>
-          </div>
+                {courseData.title}
+              </h1>
+              <p
+                className={`mt-2 text-lg ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                Taught by{" "}
+                <span className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}>
+                  {courseData.instructor}
+                </span>
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/courses")}
+              className={`px-4 py-2 ${
+                isDarkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"
+              } rounded-lg`}
+            >
+              Back to Courses
+            </button>
+          </motion.div>
 
-          {/* Main Content */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Left Column: Image and Key Info */}
-            <div className="md:col-span-1">
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="md:col-span-1"
+            >
               <img
                 src={courseData.image}
                 alt={courseData.title}
@@ -132,9 +162,7 @@ const CourseDetail = ({ isDarkMode }) => {
               />
               <div
                 className={`mt-6 p-6 rounded-lg shadow-md ${
-                  isDarkMode
-                    ? "bg-gray-800 border border-gray-700"
-                    : "bg-gray-50 border border-gray-200"
+                  isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-gray-50 border border-gray-200"
                 }`}
               >
                 <div className="space-y-4">
@@ -186,27 +214,30 @@ const CourseDetail = ({ isDarkMode }) => {
                       ${courseData.price}
                     </span>
                   </div>
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className={`w-full mt-4 ${
                       isDarkMode
                         ? "bg-teal-600 hover:bg-teal-700"
                         : "bg-teal-500 hover:bg-teal-600"
-                    } text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-md`}
+                    } text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md`}
                   >
                     Enroll Now
-                  </button>
+                  </motion.button>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Right Column: Description and Syllabus */}
-            <div className="md:col-span-2">
-              {/* Description */}
+            <motion.div
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="md:col-span-2"
+            >
               <div
                 className={`p-6 rounded-lg ${
-                  isDarkMode
-                    ? "bg-gray-800 border border-gray-700"
-                    : "bg-gray-50 border border-gray-200"
+                  isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-gray-50 border border-gray-200"
                 }`}
               >
                 <h2
@@ -225,12 +256,9 @@ const CourseDetail = ({ isDarkMode }) => {
                 </p>
               </div>
 
-              {/* Syllabus */}
               <div
                 className={`mt-6 p-6 rounded-lg ${
-                  isDarkMode
-                    ? "bg-gray-800 border border-gray-700"
-                    : "bg-gray-50 border border-gray-200"
+                  isDarkMode ? "bg-gray-800 border border-gray-700" : "bg-gray-50 border border-gray-200"
                 }`}
               >
                 <h2
@@ -242,8 +270,11 @@ const CourseDetail = ({ isDarkMode }) => {
                 </h2>
                 <ul className="space-y-3">
                   {courseData.syllabus.map((item, index) => (
-                    <li
+                    <motion.li
                       key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
                       className={`flex items-center ${
                         isDarkMode ? "text-gray-300" : "text-gray-600"
                       }`}
@@ -254,15 +285,15 @@ const CourseDetail = ({ isDarkMode }) => {
                         }`}
                       />
                       {item}
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 };
 

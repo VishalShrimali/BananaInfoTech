@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = ({ isDarkMode }) => {
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,18 +16,10 @@ const Login = ({ isDarkMode }) => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/bananasit/users/login",
-        { email, password }
-      );
-
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate("/");
+      await login(email, password);
+      // Redirect to home and scroll to hero section (handled in AuthContext)
     } catch (err) {
-      setError(
-        err.response?.data?.message || "An error occurred during login."
-      );
+      setError(err.response?.data?.message || "An error occurred during login.");
     } finally {
       setLoading(false);
     }
@@ -112,19 +105,6 @@ const Login = ({ isDarkMode }) => {
               />
             </div>
 
-            <div className="text-right mb-6">
-              <Link
-                to="/forgot-password"
-                className={`text-sm ${
-                  isDarkMode
-                    ? "text-teal-300 hover:text-teal-200"
-                    : "text-teal-600 hover:text-teal-500"
-                } transition-colors duration-300`}
-              >
-                Forgot Password?
-              </Link>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -140,23 +120,38 @@ const Login = ({ isDarkMode }) => {
             </button>
           </form>
 
-          <p
-            className={`text-center mt-6 text-sm ${
-              isDarkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            Don’t have an account?{" "}
-            <Link
-              to="/register"
-              className={`${
-                isDarkMode
-                  ? "text-teal-300 hover:text-teal-200"
-                  : "text-teal-600 hover:text-teal-500"
-              } font-semibold transition-colors duration-300`}
+          <div className="mt-4 text-center space-y-2">
+            <p
+              className={`text-sm ${
+                isDarkMode ? "text-gray-300" : "text-gray-600"
+              }`}
             >
-              Sign Up
-            </Link>
-          </p>
+              Don’t have an account?{" "}
+              <Link
+                to="/register"
+                className={`${
+                  isDarkMode ? "text-teal-300 hover:text-teal-400" : "text-teal-600 hover:text-teal-700"
+                } font-medium`}
+              >
+                Register
+              </Link>
+            </p>
+            <p
+              className={`text-sm ${
+                isDarkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              Forgot your password?{" "}
+              <Link
+                to="/forgot-password"
+                className={`${
+                  isDarkMode ? "text-teal-300 hover:text-teal-400" : "text-teal-600 hover:text-teal-700"
+                } font-medium`}
+              >
+                Reset it
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </section>
