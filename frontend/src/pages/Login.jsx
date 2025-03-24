@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
@@ -8,18 +8,15 @@ const Login = ({ isDarkMode }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       await login(email, password);
-      // Redirect to home and scroll to hero section (handled in AuthContext)
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred during login.");
+      setError(err.message || "An error occurred during login.");
     } finally {
       setLoading(false);
     }
@@ -43,19 +40,15 @@ const Login = ({ isDarkMode }) => {
             }`}
           >
             Login to{" "}
-            <span
-              className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}
-            >
+            <span className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}>
               BananaSIT
             </span>
           </h2>
-
           {error && (
             <div className="mb-4 p-3 bg-red-500/20 text-red-500 rounded-lg text-center">
               {error}
             </div>
           )}
-
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
               <label
@@ -78,9 +71,9 @@ const Login = ({ isDarkMode }) => {
                 } focus:outline-none focus:ring-2 transition-all duration-300`}
                 placeholder="Enter your email"
                 required
+                disabled={loading}
               />
             </div>
-
             <div className="mb-6">
               <label
                 htmlFor="password"
@@ -102,9 +95,9 @@ const Login = ({ isDarkMode }) => {
                 } focus:outline-none focus:ring-2 transition-all duration-300`}
                 placeholder="Enter your password"
                 required
+                disabled={loading}
               />
             </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -119,7 +112,6 @@ const Login = ({ isDarkMode }) => {
               {loading ? "Signing In..." : "Sign In"}
             </button>
           </form>
-
           <div className="mt-4 text-center space-y-2">
             <p
               className={`text-sm ${

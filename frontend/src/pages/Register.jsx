@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 const Register = ({ isDarkMode }) => {
-  const [name, setName] = useState("");
+  const { login } = useContext(AuthContext); // Use AuthContext for auto-login
+  const [name, setName] = useState(""); // Added name field
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // Toggle for admin (testing only)
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -23,14 +26,18 @@ const Register = ({ isDarkMode }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/bananasit/users/signup", {
-        name,
+      const endpoint = isAdmin
+        ? "http://localhost:3000/api/v1/bananasit/admin/register"
+        : "http://localhost:3000/api/v1/bananasit/users/signup";
+      const response = await axios.post(endpoint, {
+        name, // Include name in payload
         email,
         password,
       });
 
-      // Redirect to login page after successful registration
-      navigate("/login");
+      // Auto-login after successful registration
+      await login(email, password);
+      navigate(isAdmin ? "/admin" : "/"); // Redirect based on isAdmin
     } catch (err) {
       setError(
         err.response?.data?.message || "An error occurred during registration."
@@ -47,36 +54,30 @@ const Register = ({ isDarkMode }) => {
       } transition-colors duration-300`}
     >
       <div className="max-w-md w-full mx-auto px-6 py-12">
-        {/* Card Container */}
         <div
           className={`rounded-lg shadow-lg p-8 ${
             isDarkMode ? "bg-gray-800" : "bg-gray-50"
           }`}
         >
-          {/* Header */}
           <h2
             className={`text-3xl font-bold text-center mb-6 ${
               isDarkMode ? "text-gray-100" : "text-gray-800"
             }`}
           >
             Join{" "}
-            <span
-              className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}
-            >
+            <span className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}>
               BananaSIT
             </span>
           </h2>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-4 p-3 bg-red-500/20 text-red-500 rounded-lg text-center">
               {error}
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit}>
-            {/* Full Name Field */}
+            {/* Name Field */}
             <div className="mb-6">
               <label
                 htmlFor="name"
@@ -84,7 +85,7 @@ const Register = ({ isDarkMode }) => {
                   isDarkMode ? "text-gray-300" : "text-gray-600"
                 }`}
               >
-                Full Name
+                Name
               </label>
               <input
                 type="text"
@@ -96,8 +97,9 @@ const Register = ({ isDarkMode }) => {
                     ? "bg-gray-700 border-gray-600 text-gray-200 focus:ring-teal-500"
                     : "bg-white border-gray-300 text-gray-800 focus:ring-teal-400"
                 } focus:outline-none focus:ring-2 transition-all duration-300`}
-                placeholder="Enter your full name"
+                placeholder="Enter your name"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -123,6 +125,7 @@ const Register = ({ isDarkMode }) => {
                 } focus:outline-none focus:ring-2 transition-all duration-300`}
                 placeholder="Enter your email"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -148,6 +151,7 @@ const Register = ({ isDarkMode }) => {
                 } focus:outline-none focus:ring-2 transition-all duration-300`}
                 placeholder="Create a password"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -173,7 +177,26 @@ const Register = ({ isDarkMode }) => {
                 } focus:outline-none focus:ring-2 transition-all duration-300`}
                 placeholder="Confirm your password"
                 required
+                disabled={loading}
               />
+            </div>
+
+            {/* Admin Toggle (Temporary for Testing) */}
+            <div className="mb-6 flex items-center">
+              <input
+                type="checkbox"
+                id="isAdmin"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                className="mr-2"
+                disabled={loading}
+              />
+              <label
+                htmlFor="isAdmin"
+                className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
+              >
+                Register as Admin (Testing Only)
+              </label>
             </div>
 
             {/* Submit Button */}

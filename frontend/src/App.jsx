@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react"; // Added useEffect
-import { Routes, Route, Navigate } from "react-router-dom"; // Added Navigate
+import { useState, useEffect, useContext } from "react";
+import { Routes, Route, Navigate, BrowserRouter as Router } from "react-router-dom";
+import { AuthContext, AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Hero from "./pages/Hero";
@@ -11,20 +12,20 @@ import Testimonials from "./components/Testimonial";
 import About from "./components/About";
 import ContactUs from "./components/ContactUs";
 import AuthErrorPage from "./pages/AuthErrorPage";
+import AdminDashboard from "./components/AdminDashboard";
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { token, logout } = useContext(AuthContext);
 
-  // Check authentication status on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token); // Set to true if token exists
-  }, []);
-
-  // Protected Route Component
   const ProtectedRoute = ({ children }) => {
-    return isAuthenticated ? children : <Navigate to="/auth-error" />;
+    return token ? children : <Navigate to="/auth-error" />;
+  };
+
+  const ProtectedAdminRoute = ({ children }) => {
+    if (!token) return <Navigate to="/auth-error" />;
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    return decoded.role === "admin" ? children : <Navigate to="/auth-error" />;
   };
 
   return (
@@ -36,21 +37,16 @@ const App = () => {
       <Navbar
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
-        isAuthenticated={isAuthenticated} // Pass auth state to Navbar
-        setIsAuthenticated={setIsAuthenticated} // Allow Navbar to update auth
+        isAuthenticated={!!token}
+        setIsAuthenticated={logout}
       />
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Hero isDarkMode={isDarkMode} />} />
           <Route path="/about" element={<About isDarkMode={isDarkMode} />} />
           <Route path="/contact" element={<ContactUs isDarkMode={isDarkMode} />} />
-          <Route
-            path="/login"
-            element={<Login isDarkMode={isDarkMode} setIsAuthenticated={setIsAuthenticated} />}
-          />
+          <Route path="/login" element={<Login isDarkMode={isDarkMode} />} />
           <Route path="/register" element={<Register isDarkMode={isDarkMode} />} />
-          
-          {/* Protected Routes */}
           <Route
             path="/courses"
             element={
@@ -67,17 +63,16 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          
           <Route
-            path="/testimonials"
-            element={<Testimonials isDarkMode={isDarkMode} />}
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard isDarkMode={isDarkMode} />
+              </ProtectedAdminRoute>
+            }
           />
-          <Route
-            path="/auth-error"
-            element={<AuthErrorPage isDarkMode={isDarkMode} />}
-          />
-          
-          {/* 404 - Page Not Found */}
+          <Route path="/testimonials" element={<Testimonials isDarkMode={isDarkMode} />} />
+          <Route path="/auth-error" element={<AuthErrorPage isDarkMode={isDarkMode} />} />
           <Route
             path="*"
             element={
@@ -93,4 +88,12 @@ const App = () => {
   );
 };
 
-export default App;
+const RootApp = () => (
+  <Router>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </Router>
+);
+
+export default RootApp;

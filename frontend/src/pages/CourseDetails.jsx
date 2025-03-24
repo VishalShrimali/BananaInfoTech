@@ -9,42 +9,49 @@ const CourseDetail = ({ isDarkMode }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate(); // For navigation on error or back button
 
-  // Fetch course details
   useEffect(() => {
     const fetchCourse = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Authentication required. Please log in.");
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Authentication required. Please log in.");
+            }
+
+            const response = await fetch(
+                `http://localhost:3000/api/v1/bananasit/courses/view/${courseId}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} - ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            setCourse({
+                title: data.title,
+                description: data.description,
+                instructor: data.instructor,
+                duration: data.duration,
+                level: data.level,
+                price: data.price,
+                syllabus: data.syllabus,
+                image: data.image
+            });
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/bananasit/courses/view/${courseId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${await response.text()}`);
-        }
-
-        const data = await response.json();
-        setCourse(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
     };
 
     fetchCourse();
-  }, [courseId]);
-
+}, [courseId]);
   // Placeholder course structure
   const placeholderCourse = {
     id: courseId,

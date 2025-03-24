@@ -1,5 +1,6 @@
 import  User  from "../models/user.models.js";
 import { Course } from "../models/course.models.js";
+
 const userProfile = async (req, res) => {
     try{
          const  _id  = req.params.id;
@@ -67,7 +68,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-const listCourses = async (req, res) => {
+const listCourses = async (_, res) => {
     try{
         const courses = await Course.find();
         res.status(200).json(courses);
@@ -114,7 +115,6 @@ const signUpUser = async (req, res) => {
         
     }
 };
-
 const updateUser = async (req, res) => {
     try{
         const { email, name, password } = req.body;
@@ -184,6 +184,7 @@ const contactUs =  async (req, res) => {
       res.status(500).json({ error: "Internal Server Error." });
     }
   };
+
   
 
 export {
@@ -193,5 +194,6 @@ export {
     updateUser,
     removeUser,
     listCourses,
-    contactUs
+    contactUs,
+   
 }

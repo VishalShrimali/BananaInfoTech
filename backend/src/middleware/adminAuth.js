@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export const courseAuth = (req, res, next) => {
+export const adminAuth = (req, res, next) => {
     // Get the token from the request header
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
