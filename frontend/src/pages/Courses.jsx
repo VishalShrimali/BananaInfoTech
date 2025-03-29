@@ -33,8 +33,10 @@ const Courses = ({ isDarkMode }) => {
         }
 
         const data = await response.json();
+        console.log("Fetched courses:", data); // Debug log
         setCourses(data);
       } catch (error) {
+        console.error("Fetch error:", error.message); // Debug log
         setError(error.message);
       } finally {
         setLoading(false);
@@ -46,7 +48,7 @@ const Courses = ({ isDarkMode }) => {
 
   if (loading) {
     return (
-      <div className={`flex flex-col items-center justify-center min-h-screen ${isDarkMode ? "bg-gray-950" : "bg-white"}`}>
+      <div className={`flex flex-col items-center justify-center py-16 ${isDarkMode ? "bg-gray-950" : "bg-white"}`}>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -61,14 +63,14 @@ const Courses = ({ isDarkMode }) => {
 
   if (error) {
     return (
-      <div className={`flex flex-col items-center justify-center min-h-screen ${isDarkMode ? "bg-gray-950" : "bg-white"}`}>
+      <div className={`flex flex-col items-center justify-center py-16 ${isDarkMode ? "bg-gray-950" : "bg-white"}`}>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
           className={`text-xl mb-4 text-center max-w-3xl font-sans ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
         >
-          Oops! It looks like you need to log in to access our amazing courses. Sign in now to start learning!
+          {error}
         </motion.p>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -81,6 +83,7 @@ const Courses = ({ isDarkMode }) => {
       </div>
     );
   }
+
   return (
     <section className={`py-16 ${isDarkMode ? "bg-gray-950 text-gray-100" : "bg-white text-gray-900"} transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-6">
@@ -93,7 +96,7 @@ const Courses = ({ isDarkMode }) => {
           Explore Our <span className={`${isDarkMode ? "text-teal-300" : "text-teal-600"}`}>Courses</span>
         </motion.h1>
 
-        {courses.length > 0  ? (
+        {courses.length > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

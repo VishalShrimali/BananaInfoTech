@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetails";
+import Payment from "./pages/Payment"; // Add this import
 import Testimonials from "./components/Testimonial";
 import About from "./components/About";
 import ContactUs from "./components/ContactUs";
@@ -60,6 +61,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <CourseDetail isDarkMode={isDarkMode} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment/:courseId"
+            element={
+              <ProtectedRoute>
+                <Payment isDarkMode={isDarkMode} />
               </ProtectedRoute>
             }
           />

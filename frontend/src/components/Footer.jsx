@@ -1,6 +1,7 @@
 import React from "react";
 import { Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
 import { Link as ScrollLink } from "react-scroll";
+
 const Footer = ({ isDarkMode }) => {
   return (
     <>
@@ -26,8 +27,9 @@ const Footer = ({ isDarkMode }) => {
                 BananaSIT Courses
               </h2>
               <p className="mt-3 text-sm leading-relaxed">
-                Empower your future with top-tier, industry-focused courses
-                designed to help you succeed.
+                Unlock your potential with cutting-edge, industry-driven courses
+                crafted by a team of creative experts. We deliver world-class
+                digital learning solutions to help you thrive.
               </p>
             </div>
 
@@ -42,68 +44,16 @@ const Footer = ({ isDarkMode }) => {
               </h3>
               <ul className="space-y-3">
                 <li>
-                  <ScrollLink
-                    to="home"
-                    smooth={true}
-                    duration={500}
-                    className={`relative transition-all duration-300 after:content-[''] after:absolute after:w-0 after:h-[2px] after:${
-                      isDarkMode ? "bg-teal-400" : "bg-teal-600"
-                    } after:left-0 after:bottom-[-2px] after:transition-all after:duration-300 hover:after:w-full cursor-pointer ${
-                      isDarkMode
-                        ? "text-gray-300 hover:text-teal-400"
-                        : "text-gray-700 hover:text-teal-600"
-                    }`}
-                  >
-                    Home
-                  </ScrollLink>
+                  <ScrollLink to="home" smooth={true} duration={500}>Home</ScrollLink>
                 </li>
                 <li>
-                  <ScrollLink
-                    to="courses"
-                    smooth={true}
-                    duration={500}
-                    className={`relative transition-all duration-300 after:content-[''] after:absolute after:w-0 after:h-[2px] after:${
-                      isDarkMode ? "bg-teal-400" : "bg-teal-600"
-                    } after:left-0 after:bottom-[-2px] after:transition-all after:duration-300 hover:after:w-full cursor-pointer ${
-                      isDarkMode
-                        ? "text-gray-300 hover:text-teal-400"
-                        : "text-gray-700 hover:text-teal-600"
-                    }`}
-                  >
-                    Courses
-                  </ScrollLink>
+                  <ScrollLink to="courses" smooth={true} duration={500}>Courses</ScrollLink>
                 </li>
                 <li>
-                  <ScrollLink
-                    to="about"
-                    smooth={true}
-                    duration={500}
-                    className={`relative transition-all duration-300 after:content-[''] after:absolute after:w-0 after:h-[2px] after:${
-                      isDarkMode ? "bg-teal-400" : "bg-teal-600"
-                    } after:left-0 after:bottom-[-2px] after:transition-all after:duration-300 hover:after:w-full cursor-pointer ${
-                      isDarkMode
-                        ? "text-gray-300 hover:text-teal-400"
-                        : "text-gray-700 hover:text-teal-600"
-                    }`}
-                  >
-                    About Us
-                  </ScrollLink>
+                  <ScrollLink to="about" smooth={true} duration={500}>About Us</ScrollLink>
                 </li>
                 <li>
-                  <ScrollLink
-                    to="contact"
-                    smooth={true}
-                    duration={500}
-                    className={`relative transition-all duration-300 after:content-[''] after:absolute after:w-0 after:h-[2px] after:${
-                      isDarkMode ? "bg-teal-400" : "bg-teal-600"
-                    } after:left-0 after:bottom-[-2px] after:transition-all after:duration-300 hover:after:w-full cursor-pointer ${
-                      isDarkMode
-                        ? "text-gray-300 hover:text-teal-400"
-                        : "text-gray-700 hover:text-teal-600"
-                    }`}
-                  >
-                    Contact
-                  </ScrollLink>
+                  <ScrollLink to="contact" smooth={true} duration={500}>Contact</ScrollLink>
                 </li>
               </ul>
             </div>
@@ -119,28 +69,14 @@ const Footer = ({ isDarkMode }) => {
               </h3>
               <ul className="space-y-3 text-sm">
                 <li>
-                  Email:{" "}
-                  <a
-                    href="mailto:support@bananasit.com"
-                    className={`${
-                      isDarkMode ? "hover:text-teal-400" : "hover:text-teal-600"
-                    } transition`}
-                  >
-                    support@bananasit.com
-                  </a>
+                  Email: <a href="mailto:hello@bananasit.com">hello@bananasit.com</a>
                 </li>
                 <li>
-                  Phone:{" "}
-                  <a
-                    href="tel:+1234567890"
-                    className={`${
-                      isDarkMode ? "hover:text-teal-400" : "hover:text-teal-600"
-                    } transition`}
-                  >
-                    +1 (234) 567-890
-                  </a>
+                  Phone: +91 9898257016
                 </li>
-                <li>Address: 123 Learning Lane, EduCity, 12345</li>
+                <li>
+                  Address: 18, SAI ASHISH BUNGALOWS, BABEN, BARDOLI, Gujarat, India.
+                </li>
               </ul>
             </div>
 
@@ -154,68 +90,17 @@ const Footer = ({ isDarkMode }) => {
                 Follow Us
               </h3>
               <div className="flex space-x-4">
-                <a
-                  href="#"
-                  className={`p-2 rounded-full ${
-                    isDarkMode
-                      ? "bg-gray-700 text-gray-300 hover:bg-teal-500 hover:text-white"
-                      : "bg-gray-300 text-gray-700 hover:bg-teal-600 hover:text-white"
-                  } transition-all duration-300 transform hover:scale-110`}
-                >
-                  <Facebook size={20} />
-                </a>
-                <a
-                  href="#"
-                  className={`p-2 rounded-full ${
-                    isDarkMode
-                      ? "bg-gray-700 text-gray-300 hover:bg-teal-500 hover:text-white"
-                      : "bg-gray-300 text-gray-700 hover:bg-teal-600 hover:text-white"
-                  } transition-all duration-300 transform hover:scale-110`}
-                >
-                  <Twitter size={20} />
-                </a>
-                <a
-                  href="#"
-                  className={`p-2 rounded-full ${
-                    isDarkMode
-                      ? "bg-gray-700 text-gray-300 hover:bg-teal-500 hover:text-white"
-                      : "bg-gray-300 text-gray-700 hover:bg-teal-600 hover:text-white"
-                  } transition-all duration-300 transform hover:scale-110`}
-                >
-                  <Instagram size={20} />
-                </a>
-                <a
-                  href="#"
-                  className={`p-2 rounded-full ${
-                    isDarkMode
-                      ? "bg-gray-700 text-gray-300 hover:bg-teal-500 hover:text-white"
-                      : "bg-gray-300 text-gray-700 hover:bg-teal-600 hover:text-white"
-                  } transition-all duration-300 transform hover:scale-110`}
-                >
-                  <Linkedin size={20} />
-                </a>
-                <a
-                  href="#"
-                  className={`p-2 rounded-full ${
-                    isDarkMode
-                      ? "bg-gray-700 text-gray-300 hover:bg-teal-500 hover:text-white"
-                      : "bg-gray-300 text-gray-700 hover:bg-teal-600 hover:text-white"
-                  } transition-all duration-300 transform hover:scale-110`}
-                >
-                  <Youtube size={20} />
-                </a>
+                <a href="https://www.facebook.com/bananasit" target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>
+                <a href="https://www.twitter.com/bananasit" target="_blank" rel="noopener noreferrer"><Twitter size={20} /></a>
+                <a href="https://www.instagram.com/bananasit" target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>
+                <a href="https://www.linkedin.com/company/bananasit" target="_blank" rel="noopener noreferrer"><Linkedin size={20} /></a>
+                <a href="https://www.youtube.com/@bananasit" target="_blank" rel="noopener noreferrer"><Youtube size={20} /></a>
               </div>
             </div>
           </div>
 
           {/* Copyright Section */}
-          <div
-            className={`border-t ${
-              isDarkMode ? "border-gray-700" : "border-gray-300"
-            } mt-10 pt-6 text-center text-sm ${
-              isDarkMode ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
+          <div className={`border-t mt-10 pt-6 text-center text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
             © {new Date().getFullYear()} BananaSIT Courses. All rights reserved.
           </div>
         </div>

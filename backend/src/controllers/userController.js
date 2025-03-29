@@ -3,19 +3,29 @@ import { Course } from "../models/course.models.js";
 
 const userProfile = async (req, res) => {
     try{
-         const  _id  = req.params.id;
-          // Find user in a single query
-        const user = await User.findById(_id);
+            const token = req.headers.authorization?.split(" ")[1];
+            if (!token) return res.status(401).json({ message: "No token provided" });
+            try {
+              const decoded = jwt.verify(token, process.env.JWT_SECRET);
+              const user = { id: decoded.userId, email: decoded.email, role: decoded.role }; // Fetch from DB if needed
+              res.status(200).json({ user });
+            } catch (error) {
+              res.status(401).json({ message: "Invalid token" });
+            }
+          
+        //  const  _id  = req.params.id;
+        //   // Find user in a single query
+        // const user = await User.findById(_id);
 
-        if (!user) {
-            return res.status(401).json({ message: "User does not exist." });
-        }
+        // if (!user) {
+        //     return res.status(401).json({ message: "User does not exist." });
+        // }
 
-         res.status(201).json({
-            message: "User Details",
-            name: user.name,
-            email: user.email
-         })
+        //  res.status(201).json({
+        //     message: "User Details",
+        //     name: user.name,
+        //     email: user.email
+        //  })
 
     }
     catch(error){
@@ -163,6 +173,39 @@ const removeUser = async (req, res) => {
     }
 }
 
+
+
+// Endpoint to check payment status
+const PaymentConfirmation = async (req, res) => {
+    const { transactionId } = req.params;
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+  
+    try {
+      // Verify token (e.g., using JWT)
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+      // Simulate payment verification (replace with actual UPI transaction check)
+      // For testing, assume the payment is completed after 10 seconds
+      const transaction = transactions[transactionId];
+      if (transaction) {
+        const timeElapsed = (Date.now() - transaction.createdAt) / 1000; // Time in seconds
+        if (timeElapsed > 10) {
+          // Simulate successful payment after 10 seconds
+          res.status(200).json({ status: "completed" });
+        } else {
+          res.status(200).json({ status: "pending" });
+        }
+      } else {
+        // Simulate creating a new transaction entry
+        transactions[transactionId] = { createdAt: Date.now() };
+        res.status(200).json({ status: "pending" });
+      }
+    } catch (error) {
+      res.status(401).json({ message: "Invalid token" });
+    }
+  };
+
 const contactUs =  async (req, res) => {
     try {
       const { name, email, message } = req.body;
@@ -195,5 +238,6 @@ export {
     removeUser,
     listCourses,
     contactUs,
+    PaymentConfirmation
    
 }

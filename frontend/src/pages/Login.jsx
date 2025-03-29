@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Removed unused useNavigate
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
@@ -8,13 +8,14 @@ const Login = ({ isDarkMode }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email, password, isAdminLogin); // Context handles navigation
     } catch (err) {
       setError(err.message || "An error occurred during login.");
     } finally {
@@ -97,6 +98,22 @@ const Login = ({ isDarkMode }) => {
                 required
                 disabled={loading}
               />
+            </div>
+            <div className="mb-6">
+              <label
+                className={`flex items-center ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={isAdminLogin}
+                  onChange={() => setIsAdminLogin(!isAdminLogin)}
+                  className="mr-2 rounded border-gray-300 text-teal-500 focus:ring-teal-500"
+                  disabled={loading}
+                />
+                Login as Admin
+              </label>
             </div>
             <button
               type="submit"
