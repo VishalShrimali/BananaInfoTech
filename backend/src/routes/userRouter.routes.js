@@ -10,7 +10,7 @@ userRouter.get('/profile/:id', userAuth, userProfile );
 userRouter.post('/login',loginUser );
 
 userRouter.post('/signup', signUpUser );
-userRouter.get("/check-payment/:transactionId", PaymentConfirmation);
+userRouter.get("/check-payment/:transactionId",userAuth, PaymentConfirmation);
 userRouter.get('/courses', userAuth , listCourses );
 
 userRouter.put('/update/:id', updateUser);

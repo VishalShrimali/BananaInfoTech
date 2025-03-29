@@ -1,5 +1,6 @@
 import  User  from "../models/user.models.js";
 import { Course } from "../models/course.models.js";
+import jwt from "jsonwebtoken"; // Ensure this is imported
 
 const userProfile = async (req, res) => {
     try{
@@ -172,39 +173,49 @@ const removeUser = async (req, res) => {
         
     }
 }
-
-
-
-// Endpoint to check payment status
+const transactions = {}; // In-memory store for transactions
+// In a real application, this should be replaced with a database or persistent store
 const PaymentConfirmation = async (req, res) => {
-    const { transactionId } = req.params;
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided" });
-  
-    try {
-      // Verify token (e.g., using JWT)
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  
-      // Simulate payment verification (replace with actual UPI transaction check)
-      // For testing, assume the payment is completed after 10 seconds
-      const transaction = transactions[transactionId];
-      if (transaction) {
-        const timeElapsed = (Date.now() - transaction.createdAt) / 1000; // Time in seconds
-        if (timeElapsed > 10) {
-          // Simulate successful payment after 10 seconds
-          res.status(200).json({ status: "completed" });
-        } else {
-          res.status(200).json({ status: "pending" });
-        }
+  const { transactionId } = req.params;
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "No token provided or invalid format" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  console.log("Token: ", token);
+  console.log("Transaction ID: ", transactionId);
+
+  try {
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded JWT:", decoded); // Log decoded payload for debugging
+
+    // Simulate payment verification
+    const transaction = transactions[transactionId];
+    if (transaction) {
+      const timeElapsed = (Date.now() - transaction.createdAt) / 1000;
+      if (timeElapsed > 10) {
+        res.status(200).json({ status: "completed" });
       } else {
-        // Simulate creating a new transaction entry
-        transactions[transactionId] = { createdAt: Date.now() };
         res.status(200).json({ status: "pending" });
       }
-    } catch (error) {
-      res.status(401).json({ message: "Invalid token" });
+    } else {
+      transactions[transactionId] = { createdAt: Date.now() };
+      res.status(200).json({ status: "pending" });
     }
-  };
+  } catch (error) {
+    console.error("JWT Verification Error:", error.message);
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token has expired" });
+    } else if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 const contactUs =  async (req, res) => {
     try {

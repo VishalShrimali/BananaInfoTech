@@ -121,59 +121,59 @@ const CourseDetail = ({ isDarkMode }) => {
   };
 
   // Poll the backend to check payment status
-  // Poll the backend to check payment status
-useEffect(() => {
-  if (!qrCodeUrl || !transactionId || isPaymentConfirmed) return;
+  useEffect(() => {
+    if (!qrCodeUrl || !transactionId || isPaymentConfirmed) return;
 
-  const pollPaymentStatus = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:3000/api/v1/bananasit/users/check-payment/${transactionId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+    const pollPaymentStatus = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://localhost:3000/api/v1/bananasit/users/check-payment/${transactionId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to check payment status: ${response.status} - ${await response.text()}`);
         }
-      );
 
-      if (!response.ok) {
-        throw new Error(`Failed to check payment status: ${response.status} - ${await response.text()}`);
+        const data = await response.json();
+        if (data.status === "completed") {
+          setIsPaymentConfirmed(true);
+          localStorage.setItem(`payment_${courseId}`, "confirmed");
+          setQrCodeUrl(null);
+          if (topRef.current) {
+            topRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      } catch (err) {
+        console.error("Error checking payment status:", err.message);
+        setError("Failed to verify payment. Please try again.");
       }
+    };
 
-      const data = await response.json();
-      if (data.status === "completed") {
-        setIsPaymentConfirmed(true);
-        localStorage.setItem(`payment_${courseId}`, "confirmed");
+    const interval = setInterval(pollPaymentStatus, 5000);
+
+    // Stop polling after 5 minutes (300,000 ms)
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      if (!isPaymentConfirmed) {
+        setError("Payment not confirmed within 5 minutes. Please try again.");
         setQrCodeUrl(null);
-        if (topRef.current) {
-          topRef.current.scrollIntoView({ behavior: "smooth" });
-        }
       }
-    } catch (err) {
-      console.error("Error checking payment status:", err.message);
-      setError("Failed to verify payment. Please try again.");
-    }
-  };
+    }, 300000);
 
-  const interval = setInterval(pollPaymentStatus, 5000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [qrCodeUrl, transactionId, isPaymentConfirmed, courseId]);
 
-  // Stop polling after 5 minutes (300,000 ms)
-  const timeout = setTimeout(() => {
-    clearInterval(interval);
-    if (!isPaymentConfirmed) {
-      setError("Payment not confirmed within 5 minutes. Please try again.");
-      setQrCodeUrl(null);
-    }
-  }, 300000);
-
-  return () => {
-    clearInterval(interval);
-    clearTimeout(timeout);
-  };
-}, [qrCodeUrl, transactionId, isPaymentConfirmed, courseId]);
   const playLesson = (videoUrl) => {
     setCurrentVideoUrl(videoUrl);
     setIsVideoModalOpen(true);
@@ -354,18 +354,16 @@ useEffect(() => {
                       Generate Payment QR
                     </motion.button>
                   ) : (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`w-full mt-4 ${
-                        isDarkMode
-                          ? "bg-green-600 hover:bg-green-700"
-                          : "bg-green-500 hover:bg-green-600"
-                      } text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md`}
-                      disabled
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className={`w-full mt-4 text-center p-3 rounded-lg ${
+                        isDarkMode ? "bg-green-600" : "bg-green-500"
+                      } text-white font-semibold`}
                     >
-                      Payment Confirmed
-                    </motion.button>
+                      Payment is done! Enjoy your course.
+                    </motion.div>
                   )}
                 </div>
               </div>
